@@ -49,7 +49,8 @@ public class ImageController {
     public String showImage(@PathVariable("imageId") Integer imageId,
                             @PathVariable("title")String title,
                             Model model) {
-        Image image = imageService.getImageByTitle(imageId);
+
+        Image image = imageService.getImageById(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
         return "images/image";
