@@ -5,13 +5,13 @@ import ImageHoster.model.Tag;
 import ImageHoster.model.User;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
+import ImageHoster.service.UserService;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Controller
+@SessionAttributes("name")
 public class ImageController {
 
     @Autowired
@@ -97,11 +98,16 @@ public class ImageController {
     @RequestMapping(value = "/editImage")
     public String editImage(@RequestParam("imageId") Integer imageId, Model model) {
         Image image = imageService.getImage(imageId);
-
+//        String editError = "Only the owner of the image can edit the image";
         String tags = convertTagsToString(image.getTags());
-        model.addAttribute("image", image);
-        model.addAttribute("tags", tags);
-        return "images/edit";
+//        if (image.getUser() == user){
+            model.addAttribute("image", image);
+            model.addAttribute("tags", tags);
+            return "images/edit";
+//        }else {
+//            model.addAttribute("editError", editError);
+//        }
+//        return "images/edit";
     }
 
     //This controller method is called when the request pattern is of type 'images/edit' and also the incoming request is of PUT type
@@ -135,7 +141,7 @@ public class ImageController {
         updatedImage.setDate(new Date());
 
         imageService.updateImage(updatedImage);
-        return "redirect:/images/" + updatedImage.getTitle();
+        return "redirect:/images/" +updatedImage.getId() +"/"+ updatedImage.getTitle();
     }
 
 
@@ -143,9 +149,22 @@ public class ImageController {
     //The method calls the deleteImage() method in the business logic passing the id of the image to be deleted
     //Looks for a controller method with request mapping of type '/images'
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
-    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId) {
-        imageService.deleteImage(imageId);
-        return "redirect:/images";
+    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId,
+                                     ModelMap modelMap) {
+        Image image = imageService.getImage(imageId);
+        String imageUser = image.getUser().getUsername();
+        String loggedUser = modelMap.get("name").toString();
+        if (!imageUser.equals(loggedUser)) {
+            String error = "Only the owner of the image can delete the image";
+            modelMap.addAttribute("image", image);
+            modelMap.addAttribute("tags", image.getTags());
+            modelMap.addAttribute("deleteError", error);
+
+            return "images/image";
+        } else {
+            imageService.deleteImage(imageId);
+            return "redirect:/images";
+        }
     }
 
 
