@@ -1,6 +1,7 @@
 package ImageHoster.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class User {
     @Column(name = "username")
     private String username;
 
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-zA-Z])(?=^\\S*$).{3,20}$", message =
+            "password doesnt contain number,special character or alphabet")
     @Column(name = "password")
     private String password;
 

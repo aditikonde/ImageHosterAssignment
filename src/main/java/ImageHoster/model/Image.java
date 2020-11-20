@@ -1,6 +1,8 @@
 package ImageHoster.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,7 @@ public class Image {
     @Column(name = "id")
     private Integer id;
 
+    @NotBlank
     @Column(name = "title")
     private String title;
 
@@ -48,7 +51,9 @@ public class Image {
     //The attribute contains a list of all the tags of an image
     //Note that no column will be generated for this attribute in the database instead a new table will be created
     //Since the mapping is Many to Many, a new table will be generated containing the two columns both referencing to the primary key of both the tables ('images', 'tags')
+
     @ManyToMany(fetch = FetchType.LAZY)
+    @NotEmpty(message = "Enter relevant tag/tags")
     private List<Tag> tags = new ArrayList<>();
 
     public Image() {
