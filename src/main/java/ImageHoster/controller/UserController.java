@@ -93,6 +93,7 @@ public class UserController {
 
         List<Image> images = imageService.getAllImages();
         model.addAttribute("images", images);
+
         return "index";
     }
 }
