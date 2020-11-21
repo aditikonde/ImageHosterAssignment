@@ -31,6 +31,7 @@ public class ImageRepository {
         } catch (Exception e) {
             transaction.rollback();
         }
+
         return newImage;
     }
 
@@ -59,6 +60,7 @@ public class ImageRepository {
         } catch (NoResultException nre) {
             return null;
         }
+
     }
 
     //The method creates an instance of EntityManager
@@ -69,6 +71,7 @@ public class ImageRepository {
 //        TypedQuery<Image> typedQuery = em.createQuery("SELECT i from Image i where i.id =:imageId", Image.class).setParameter("imageId", imageId);
 //        Image image = typedQuery.getSingleResult();
         Image image = em.find(Image.class, imageId);
+
         return image;
     }
 
@@ -88,6 +91,7 @@ public class ImageRepository {
         } catch (Exception e) {
             transaction.rollback();
         }
+
     }
 
     //The method receives the Image id of the image to be deleted in the database
@@ -110,6 +114,7 @@ public class ImageRepository {
         } catch (Exception e) {
             transaction.rollback();
         }
+
     }
 
 }

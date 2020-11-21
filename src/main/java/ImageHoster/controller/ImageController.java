@@ -1,8 +1,10 @@
 package ImageHoster.controller;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import ImageHoster.service.UserService;
@@ -16,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.*;
 
 @Controller
@@ -27,6 +31,8 @@ public class ImageController {
 
     @Autowired
     private TagService tagService;
+
+
 
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
@@ -54,6 +60,7 @@ public class ImageController {
         Image image = imageService.getImageById(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("comments", image.getComments());
         return "images/image";
     }
 
@@ -89,6 +96,7 @@ public class ImageController {
         return "redirect:/images";
     }
 
+
     //This controller method is called when the request pattern is of type 'editImage'
     //This method fetches the image with the corresponding id from the database and adds it to the model with the key as 'image'
     //The method then returns 'images/edit.html' file wherein you fill all the updated details of the image
@@ -110,6 +118,7 @@ public class ImageController {
             model.addAttribute("tags", image.getTags());
             String error = "Only the owner of the image can edit the image";
             model.addAttribute("editError", error);
+            model.addAttribute("comments", image.getComments());
             return "images/image";
         } else {
             String tags = convertTagsToString(image.getTags());
@@ -168,7 +177,7 @@ public class ImageController {
             modelMap.addAttribute("image", image);
             modelMap.addAttribute("tags", image.getTags());
             modelMap.addAttribute("deleteError", error);
-
+            modelMap.addAttribute("comments", image.getComments());
             return "images/image";
         } else {
             imageService.deleteImage(imageId);
