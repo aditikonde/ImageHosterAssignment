@@ -28,7 +28,7 @@ public class Comment {
 
     public Comment(){}
 
-    public Comment(int id, String text){
+    public Comment(Integer id, String text){
         this.id = id;
         this.text = text;
     }

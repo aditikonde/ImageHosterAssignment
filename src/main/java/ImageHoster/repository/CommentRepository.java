@@ -1,13 +1,11 @@
 package ImageHoster.repository;
 
 import ImageHoster.model.Comment;
+import ImageHoster.model.Image;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,14 +26,23 @@ public class CommentRepository {
 
         try {
             transaction.begin();
-
+            em.persist(comment);
+            transaction.commit();
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         } catch(Exception e) {
             transaction.rollback();
-            em.persist(comment);
-            transaction.rollback();
         }
+
         return comment;
     }
 
-//    public List<Comment> getAllComments()
+    public List<Comment> getAllComments(Image image){
+        EntityManager em = emf.createEntityManager();
+
+        TypedQuery<Comment> query = em.createQuery("SELECT c from Comment c where c.image =:image"
+                        ,Comment.class);
+        List<Comment> resultList = query.setParameter("image",image).getResultList();
+
+        return resultList;
+    }
 }

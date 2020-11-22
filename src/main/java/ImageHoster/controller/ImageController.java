@@ -18,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.*;
 
 @Controller
@@ -32,7 +30,8 @@ public class ImageController {
     @Autowired
     private TagService tagService;
 
-
+    @Autowired
+    private CommentService commentService;
 
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
@@ -60,6 +59,10 @@ public class ImageController {
         Image image = imageService.getImageById(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+//        System.out.println("____________**************_____**********");
+        List<Comment> comments = commentService.getImageComments(image);
+        image.setComments(comments);
+//        System.out.println("Comments : **** : " + image.getComments());
         model.addAttribute("comments", image.getComments());
         return "images/image";
     }
@@ -119,6 +122,9 @@ public class ImageController {
             String error = "Only the owner of the image can edit the image";
             model.addAttribute("editError", error);
             model.addAttribute("comments", image.getComments());
+            List<Comment> comments = commentService.getImageComments(image);
+            image.setComments(comments);
+            model.addAttribute("comments", image.getComments());
             return "images/image";
         } else {
             String tags = convertTagsToString(image.getTags());
@@ -177,6 +183,9 @@ public class ImageController {
             modelMap.addAttribute("image", image);
             modelMap.addAttribute("tags", image.getTags());
             modelMap.addAttribute("deleteError", error);
+            modelMap.addAttribute("comments", image.getComments());
+            List<Comment> comments = commentService.getImageComments(image);
+            image.setComments(comments);
             modelMap.addAttribute("comments", image.getComments());
             return "images/image";
         } else {

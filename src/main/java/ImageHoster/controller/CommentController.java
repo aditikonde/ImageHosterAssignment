@@ -7,17 +7,18 @@ import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 @SessionAttributes("name")
@@ -29,27 +30,42 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+
     @RequestMapping(value = "/images/{imageId}/{title}/comments", method = RequestMethod.POST)
-    public String createComment(Comment newCommet, @RequestParam("file") MultipartFile file,
-                                @RequestParam("tags") String tags, Image image,
-                                HttpSession session)
-            throws IOException {
+    public String createComment( @RequestParam(name="comment") String comment,
+            @PathVariable("imageId") Integer imageId,Comment newComment, HttpSession session, ModelMap model) throws IOException {
+
+        newComment.setText(comment);
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        System.out.println(newComment.getText());
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 
         User user = (User) session.getAttribute("loggeduser");
+        newComment.setUser(user);
 
-        newCommet.setUser(user);
-        newCommet.setImage(image);
+        Image image = imageService.getImageById(imageId);
+        newComment.setImage(image);
+
         Date date = new Date();
         ZoneId defaultZoneId = ZoneId.systemDefault();
         Instant instant = date.toInstant();
-        newCommet.setDate(instant.atZone(defaultZoneId).toLocalDate());
-        commentService.addComment(newCommet);
+//        newComment.setDate(instant.atZone(defaultZoneId).toLocalDate());
+        newComment.setDate(LocalDate.from(ZonedDateTime.now().toLocalDate()));
+        commentService.addComment(newComment);
+
+        System.out.println("**********************************************************");
+        commentService.getImageComments(image);
+        System.out.println("**********************************************************");
 
 
-        System.out.println("--------------------------------------------");
-        System.out.println(newCommet.getText());
-        System.out.println("--------------------------------------------");
-        return "redirect:/images/image";
+        model.addAttribute("image", image);
+        model.addAttribute("comments", image.getComments());
+        model.addAttribute("tags", image.getTags());
+        List<Comment> comments = commentService.getImageComments(image);
+        image.setComments(comments);
+        model.addAttribute("comments", image.getComments());
+
+        return "redirect:/images/" +image.getId() +"/"+ image.getTitle();
     }
 
 }
