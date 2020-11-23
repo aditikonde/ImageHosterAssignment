@@ -82,7 +82,8 @@ public class ImageController {
     //Store all the tags in the database and make a list of all the tags using the findOrCreateTags() method
     //set the tags attribute of the image as a list of all the tags returned by the findOrCreateTags() method
     @RequestMapping(value = "/images/upload", method = RequestMethod.POST)
-    public String createImage(@RequestParam("file") MultipartFile file, @RequestParam("tags") String tags, Image newImage, HttpSession session) throws IOException {
+    public String createImage(@RequestParam("file") MultipartFile file, @RequestParam("tags") String tags,
+                              Image newImage, HttpSession session) throws IOException {
 
         User user = (User) session.getAttribute("loggeduser");
         newImage.setUser(user);
@@ -115,13 +116,10 @@ public class ImageController {
         model.addAttribute("image", image);
 
         if (!imageUser.getUsername().equals(loggedUser.getUsername())) {
-            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             model.addAttribute("tags", image.getTags());
             String error = "Only the owner of the image can edit the image";
             model.addAttribute("editError", error);
             model.addAttribute("comments", image.getComments());
-            List<Comment> comments = commentService.getImageComments(image);
-            image.setComments(comments);
             model.addAttribute("comments", image.getComments());
             return "images/image";
         } else {
@@ -129,7 +127,6 @@ public class ImageController {
             model.addAttribute("tags", tags);
             return "images/edit";
         }
-
     }
 
     //This controller method is called when the request pattern is of type 'images/edit' and also the incoming request is of PUT type
@@ -144,7 +141,9 @@ public class ImageController {
     //The method also receives tags parameter which is a string of all the tags separated by a comma using the annotation @RequestParam
     //The method converts the string to a list of all the tags using findOrCreateTags() method and sets the tags attribute of an image as a list of all the tags
     @RequestMapping(value = "/editImage", method = RequestMethod.PUT)
-    public String editImageSubmit(@RequestParam("file") MultipartFile file, @RequestParam("imageId") Integer imageId, @RequestParam("tags") String tags, Image updatedImage, HttpSession session) throws IOException {
+    public String editImageSubmit(@RequestParam("file") MultipartFile file, @RequestParam("imageId") Integer imageId,
+                                  @RequestParam("tags") String tags, Image updatedImage,
+                                  HttpSession session) throws IOException {
 
         Image image = imageService.getImage(imageId);
         String updatedImageData = convertUploadedFileToBase64(file);
@@ -183,8 +182,6 @@ public class ImageController {
             modelMap.addAttribute("image", image);
             modelMap.addAttribute("tags", image.getTags());
             modelMap.addAttribute("deleteError", error);
-            List<Comment> comments = commentService.getImageComments(image);
-            image.setComments(comments);
             modelMap.addAttribute("comments", image.getComments());
             return "images/image";
         } else {
