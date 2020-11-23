@@ -15,7 +15,6 @@ public class CommentService {
     private CommentRepository commentRepository;
 
     public Comment addComment(Comment comment) {
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         return commentRepository.addComment(comment);}
 
     public List<Comment> getImageComments(Image image) {

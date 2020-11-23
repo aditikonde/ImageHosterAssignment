@@ -1,4 +1,3 @@
-/*
 package ImageHoster.controller;
 
 import ImageHoster.model.User;
@@ -37,7 +36,8 @@ public class UserControllerTest {
     @MockBean
     private ImageService imageService;
 
-    //This test checks the controller logic for user signup when user requests for a registration form and checks whether the logic returns the html file 'users/registration.html'
+    // This test checks the controller logic for user signup when user requests for a
+    // registration form and checks whether the logic returns the html file 'users/registration.html'
     @Test
     public void signupWithGetRequest() throws Exception {
         this.mockMvc.perform(get("/users/registration"))
@@ -46,7 +46,9 @@ public class UserControllerTest {
     }
 
 
-    //This test checks the controller logic for user signup when user fills the form and send the POST request to the server but the password type is wrong and checks whether the Model type object contains the desired attribute with desired value
+    // This test checks the controller logic for user signup when user fills the form and send
+    // the POST request to the server but the password type is wrong and checks whether the Model
+    // type object contains the desired attribute with desired value
     @Test
     public void signupWithWrongPasswordType() throws Exception {
         User user = new User();
@@ -89,7 +91,9 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("Please Login:")));
     }
 
-    //This test checks the controller logic for user signin when user requests for a signin form where he can enter the username and password and checks whether the logic returns the html file 'users/login.html'
+    // This test checks the controller logic for user signin when user requests for a signin form
+    // where he can enter the username and password and checks whether the logic returns the html
+    // file 'users/login.html'
     @Test
     public void signinWithGetRequest() throws Exception {
         this.mockMvc.perform(get("/users/login"))
@@ -98,7 +102,9 @@ public class UserControllerTest {
     }
 
 
-    //This test checks the controller logic for user signin when user enters the username and password that has not been registered and sends the POST request to the server and checks whether the logic returns the html file 'users/login.html'
+    // This test checks the controller logic for user signin when user enters the username and
+    // password that has not been registered and sends the POST request to the server and checks
+    // whether the logic returns the html file 'users/login.html'
     @Test
     public void signinWithWrongCredentials() throws Exception {
         User userSignin = new User();
@@ -117,7 +123,10 @@ public class UserControllerTest {
     }
 
 
-    //This test checks the controller logic for user signin when user enters the username and password that has been registered and sends the POST request to the server and checks whether the logic redirects to the request handling method with request mapping of type "/images"
+    // This test checks the controller logic for user signin when user enters the username and
+    // password that has been registered and sends the POST request to the server and checks whether
+    // the logic redirects to the request handling method with request mapping of type "/images"
+    @Test
     public void signinWithCorrectCredentials() throws Exception {
         User user = new User();
         UserProfile userProfile = new UserProfile();
@@ -167,4 +176,3 @@ public class UserControllerTest {
                 .andExpect(content().string(containsString("Image Hoster")));
     }
 }
-*/

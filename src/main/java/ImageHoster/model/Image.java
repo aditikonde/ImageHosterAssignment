@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 //@Entity annotation specifies that the corresponding class is a JPA entity
 @Entity
 //@Table annotation provides more options to customize the mapping.
@@ -41,21 +40,24 @@ public class Image {
     private Date date;
 
 
-    //The 'images' table is mapped to 'users' table with Many:One mapping
-    //One image can have only one user (owner) but one user can have multiple images
-    //FetchType is EAGER
+    // The 'images' table is mapped to 'users' table with Many:One mapping
+    // One image can have only one user (owner) but one user can have multiple images
+    // FetchType is EAGER
     @ManyToOne(fetch = FetchType.EAGER)
-    //Below annotation indicates that the name of the column in 'images' table referring the primary key in 'users' table will be 'user_id'
+
+    // Below annotation indicates that the name of the column in 'images' table referring the
+    // primary key in 'users' table will be 'user_id'
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "image", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    //The attribute contains a list of all the tags of an image
-    //Note that no column will be generated for this attribute in the database instead a new table will be created
-    //Since the mapping is Many to Many, a new table will be generated containing the two columns both referencing to the primary key of both the tables ('images', 'tags')
-
+    // The attribute contains a list of all the tags of an image
+    // Note that no column will be generated for this attribute in the database instead a new
+    // table will be created
+    // Since the mapping is Many to Many, a new table will be generated containing the two
+    // columns both referencing to the primary key of both the tables ('images', 'tags')
     @ManyToMany(fetch = FetchType.LAZY)
     @NotEmpty(message = "Enter relevant tag/tags")
     private List<Tag> tags = new ArrayList<>();

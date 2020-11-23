@@ -35,7 +35,9 @@ public class ImageController {
 
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
-    public String getUserImages(Model model) {
+    public String getUserImages(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggeduser");
+        model.addAttribute("User", user);
         List<Image> images = imageService.getAllImages();
         model.addAttribute("images", images);
         return "images";
@@ -53,16 +55,11 @@ public class ImageController {
     //this list is then sent to 'images/image.html' file and the tags are displayed
     @RequestMapping("/images/{imageId}/{title}")
     public String showImage(@PathVariable("imageId") Integer imageId,
-                            @PathVariable("title")String title,
-                            Model model) {
+                            @PathVariable("title") String title, Model model) {
 
-        Image image = imageService.getImageById(imageId);
+        Image image = imageService.getImage(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
-//        System.out.println("____________**************_____**********");
-        List<Comment> comments = commentService.getImageComments(image);
-        image.setComments(comments);
-//        System.out.println("Comments : **** : " + image.getComments());
         model.addAttribute("comments", image.getComments());
         return "images/image";
     }
@@ -107,17 +104,18 @@ public class ImageController {
     //The method first needs to convert the list of all the tags to a string containing all the tags separated by a comma and then add this string in a Model type object
     //This string is then displayed by 'edit.html' file as previous tags of an image
     @RequestMapping(value = "/editImage")
-    public String editImage(@RequestParam("imageId") Integer imageId, ModelMap model) {
+    public String editImage(@RequestParam("imageId") Integer imageId, ModelMap model,
+                            HttpSession session) {
 
         Image image = imageService.getImage(imageId);
 
-        String imageUser = image.getUser().getUsername();
-        String loggedUser = model.get("name").toString();
-
+        User imageUser = image.getUser();
+        User loggedUser = (User) session.getAttribute("loggeduser");
 
         model.addAttribute("image", image);
 
-        if (!imageUser.equals(loggedUser)) {
+        if (!imageUser.getUsername().equals(loggedUser.getUsername())) {
+            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             model.addAttribute("tags", image.getTags());
             String error = "Only the owner of the image can edit the image";
             model.addAttribute("editError", error);
@@ -174,16 +172,17 @@ public class ImageController {
     //Looks for a controller method with request mapping of type '/images'
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
     public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId,
-                                     ModelMap modelMap) {
+                                     ModelMap modelMap,HttpSession session) {
+
         Image image = imageService.getImage(imageId);
-        String imageUser = image.getUser().getUsername();
-        String loggedUser = modelMap.get("name").toString();
-        if (!imageUser.equals(loggedUser)) {
+        User imageUser = image.getUser();
+        User loggedUser = (User) session.getAttribute("loggeduser");
+
+        if (!imageUser.getUsername().equals(loggedUser.getUsername()) ) {
             String error = "Only the owner of the image can delete the image";
             modelMap.addAttribute("image", image);
             modelMap.addAttribute("tags", image.getTags());
             modelMap.addAttribute("deleteError", error);
-            modelMap.addAttribute("comments", image.getComments());
             List<Comment> comments = commentService.getImageComments(image);
             image.setComments(comments);
             modelMap.addAttribute("comments", image.getComments());

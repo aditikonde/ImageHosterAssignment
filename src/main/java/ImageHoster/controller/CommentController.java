@@ -30,42 +30,22 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-
+    //This controller method lets user add comments.
     @RequestMapping(value = "/images/{imageId}/{title}/comments", method = RequestMethod.POST)
-    public String createComment( @RequestParam(name="comment") String comment,
+    public String createComment( @RequestParam(name="comment") String comment, @PathVariable(
+            "title") String title,
             @PathVariable("imageId") Integer imageId,Comment newComment, HttpSession session, ModelMap model) throws IOException {
-
-        newComment.setText(comment);
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-        System.out.println(newComment.getText());
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 
         User user = (User) session.getAttribute("loggeduser");
         newComment.setUser(user);
 
         Image image = imageService.getImageById(imageId);
         newComment.setImage(image);
-
-        Date date = new Date();
-        ZoneId defaultZoneId = ZoneId.systemDefault();
-        Instant instant = date.toInstant();
-//        newComment.setDate(instant.atZone(defaultZoneId).toLocalDate());
+        newComment.setText(comment);
         newComment.setDate(LocalDate.from(ZonedDateTime.now().toLocalDate()));
         commentService.addComment(newComment);
 
-        System.out.println("**********************************************************");
-        commentService.getImageComments(image);
-        System.out.println("**********************************************************");
-
-
-        model.addAttribute("image", image);
-        model.addAttribute("comments", image.getComments());
-        model.addAttribute("tags", image.getTags());
-        List<Comment> comments = commentService.getImageComments(image);
-        image.setComments(comments);
-        model.addAttribute("comments", image.getComments());
-
-        return "redirect:/images/" +image.getId() +"/"+ image.getTitle();
+        return "redirect:/images/" + imageId +"/"+ title;
     }
 
 }

@@ -1,8 +1,7 @@
-/*
 package ImageHoster.controller;
 
-
 import ImageHoster.model.Image;
+import ImageHoster.model.Tag;
 import ImageHoster.model.User;
 import ImageHoster.model.UserProfile;
 import ImageHoster.service.CommentService;
@@ -16,6 +15,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -34,7 +36,8 @@ public class CommentControllerTest {
     @MockBean
     private ImageService imageService;
 
-    //This test checks controller logic for comment and checks whether the controller logic redirects to the request handling method with request mapping of type "/images/{imageId}/{title}"
+    // This test checks controller logic for comment and checks whether the controller logic
+    // redirects to the request handling method with request mapping of type "/images/{imageId}/{title}"
     @Test
     public void createComment() throws Exception {
         User user = new User();
@@ -56,13 +59,17 @@ public class CommentControllerTest {
         image.setId(1);
         image.setTitle("new");
         image.setDescription("This image is for testing purpose");
+        image.setUser(user);
+        List<Tag> tags = new ArrayList<>();
+        tags.add(new Tag("testTag"));
+        image.setTags(tags);
 
         Mockito.when(imageService.getImage(Mockito.anyInt())).thenReturn(image);
 
-        this.mockMvc.perform(post("/image/1/new/comments")
+        this.mockMvc.perform(post("/images/1/new/comments")
                 .param("comment", "This comment is for testing purpose")
                 .session(session))
                 .andExpect(redirectedUrl("/images/1/new"));
     }
 }
-*/
+
